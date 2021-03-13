@@ -5,7 +5,7 @@ from flask_mysqldb import MySQL
 app = Flask(__name__)
 
 # Mysql Connection
-app.config['MYSQL_HOST'] = 'mysqldb' 
+app.config['MYSQL_HOST'] = 'localhost' 
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'root'
 app.config['MYSQL_DB'] = 'flaskcrud'
@@ -15,15 +15,16 @@ mysql = MySQL(app)
 app.secret_key = "mysecretkey"
 
 # create tables
-stmt = "SHOW TABLES LIKE 'contacts'"
-cur = mysql.connection.cursor()
-cur.execute(stmt)
-result = cur.fetchone()
-if result:
-    pass
-else:
-    cur.execute('create table contacts( id int NOT NULL AUTO_INCREMENT, fullname varchar(255), phone varchar(255), email varchar(255), PRIMARY KEY (id));')
-cur.close()
+with app.app_context():
+    stmt = "SHOW TABLES LIKE 'contacts';"
+    cur = mysql.connection.cursor()
+    cur.execute(stmt)
+    result = cur.fetchone()
+    if result:
+        pass
+    else:
+        cur.execute('create table contacts( id int NOT NULL AUTO_INCREMENT, fullname varchar(255), phone varchar(255), email varchar(255), PRIMARY KEY (id));')
+    cur.close()
 
 # routes
 @app.route('/')
