@@ -1,0 +1,28 @@
+version: "3.6"
+
+services:
+  mysqldb:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: flaskcrud
+  
+  flaskapp:
+    image: abhishekjayaram/flask:v4
+    ports:
+      - "3000:3000"
+    environment:
+      MYSQL_HOST: mysqldb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_DB: flaskcrud
+    depends_on:
+      - mysqldb
+    restart: always
+
+
+volumes:
+  db_data:
