@@ -1,18 +1,47 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_mysqldb import MySQL
+import os
 
 # initializations
 app = Flask(__name__)
 
 # Mysql Connection
-app.config['MYSQL_HOST'] = 'localhost' 
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'root'
-app.config['MYSQL_DB'] = 'flaskcrud'
+if os.environ.get('MYSQL_HOST'):
+    app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST')
+else:
+    app.config['MYSQL_HOST'] = 'localhost'
+
+if os.environ.get('MYSQL_USER'):
+    app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER')
+else:
+    app.config['MYSQL_USER'] = 'root'
+
+if os.environ.get('MYSQL_PASSWORD'):
+    app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD')
+else:
+    app.config['MYSQL_PASSWORD'] = 'root'
+
+if os.environ.get('MYSQL_DB'):
+    app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB')
+else:
+    app.config['MYSQL_DB'] = 'flaskcrud'
+
 mysql = MySQL(app)
 
 # settings
 app.secret_key = "mysecretkey"
+
+# create contacts table
+with app.app_context():
+    stmt = "SHOW TABLES LIKE 'contacts';"
+    cur = mysql.connection.cursor()
+    cur.execute(stmt)
+    result = cur.fetchone()
+    if result:
+        pass
+    else:
+        cur.execute('create table contacts( id int NOT NULL AUTO_INCREMENT, fullname varchar(255), phone varchar(255), email varchar(255), PRIMARY KEY (id));')
+    cur.close()
 
 # routes
 @app.route('/')
